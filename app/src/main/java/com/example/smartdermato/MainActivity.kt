@@ -27,12 +27,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -42,13 +42,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartdermato.ui.theme.SmartDermatoTheme
 import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
                     sheetContent = {
                         PhotoBottomSheetContent(
                             bitmaps = bitmaps,
+                            onPhotoClick = {selectedBitmap -> viewModel.onPhotoClicked(selectedBitmap)},
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
@@ -145,6 +146,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+                if (viewModel.showDialog) {
+                    ShowResultsDialog(result = viewModel.resultText) {
+                        viewModel.onDialogDismissed()  // Ensure this method is called to handle dialog dismissal
+                    }
+                }
             }
         }
     }
@@ -183,6 +189,19 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    @Composable
+    fun ShowResultsDialog(result: String, onDismiss: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Analysis Result") },
+            text = { Text(result) },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("OK")
+                }
+            }
+        )
+    }
     private fun hasRequiredPermissions(): Boolean {
         return CAMERAX_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
@@ -198,3 +217,4 @@ class MainActivity : ComponentActivity() {
         )
     }
 }
+

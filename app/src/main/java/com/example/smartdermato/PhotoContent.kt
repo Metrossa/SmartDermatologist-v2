@@ -3,6 +3,7 @@ package com.example.smartdermato
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PhotoBottomSheetContent(
     bitmaps: List<Bitmap>,
+    onPhotoClick: (Bitmap) -> Unit, // Adding a click handler
     modifier: Modifier = Modifier
 ) {
     if(bitmaps.isEmpty()) {
@@ -46,6 +48,7 @@ fun PhotoBottomSheetContent(
                     contentDescription = null,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
+                        .clickable { onPhotoClick(bitmap) }
                 )
             }
         }
